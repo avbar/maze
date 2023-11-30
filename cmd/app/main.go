@@ -3,26 +3,20 @@ package main
 import (
 	"log"
 
+	"github.com/avbar/maze/internal/game"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Game struct{}
-
-func (g *Game) Update() error {
-	return nil
-}
-
-func (g *Game) Draw(screen *ebiten.Image) {
-
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return outsideWidth, outsideHeight
-}
+const (
+	mazeCols = 10
+	mazeRows = 10
+)
 
 func main() {
-	g := &Game{}
+	g := game.NewGame(mazeCols, mazeRows)
 
+	ebiten.SetWindowTitle("Maze")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
