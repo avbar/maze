@@ -9,13 +9,16 @@ import (
 )
 
 const (
-	mazeCols = 10
-	mazeRows = 10
+	ScreenWidth  = 800
+	ScreenHeight = 600
+	Cols         = 10
+	Rows         = 10
 )
 
 func main() {
-	g := game.NewGame(mazeCols, mazeRows)
+	g := game.NewGame(ScreenWidth, ScreenHeight, Cols, Rows)
 
+	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Maze")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

@@ -2,33 +2,44 @@ package game
 
 import (
 	"github.com/avbar/maze/internal/maze"
+	"github.com/avbar/maze/internal/player"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const (
-	ScreenWidth  = 800
-	ScreenHeight = 600
-)
-
 type Game struct {
-	maze *maze.Maze
+	screenWidth  int
+	screenHeight int
+	maze         *maze.Maze
+	player       *player.Player
 }
 
-func NewGame(cols, rows int) *Game {
+func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
+	colWidth := float64(screenWidth) / float64(cols)
+	rowHeight := float64(screenHeight) / float64(rows)
+
+	maze := maze.NewMaze(cols, rows, colWidth, rowHeight)
+	player := player.NewPlayer(maze, 0, 0)
+
 	return &Game{
-		maze: maze.NewMaze(ScreenWidth, ScreenHeight, cols, rows),
+		screenWidth:  screenWidth,
+		screenHeight: screenHeight,
+		maze:         maze,
+		player:       player,
 	}
 }
 
 func (g *Game) Update() error {
+	g.player.Update()
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.maze.Draw(screen)
+	g.player.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return ScreenWidth, ScreenHeight
+	return g.screenWidth, g.screenHeight
 }
