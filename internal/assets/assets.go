@@ -12,6 +12,7 @@ import (
 var assets embed.FS
 
 var PlayerSprite = mustLoadImage("png/gopher.png")
+var RivalSprite = mustLoadImage("png/brown_gopher.png")
 var CookieSprite = mustLoadImage("png/cookie.png")
 
 func mustLoadImage(name string) *ebiten.Image {
