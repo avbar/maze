@@ -2,21 +2,10 @@ package player
 
 import (
 	"github.com/avbar/maze/internal/assets"
-	"github.com/avbar/maze/internal/maze"
+	"github.com/avbar/maze/internal/common"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
-
-type Cell struct {
-	col int
-	row int
-}
-
-type Vector struct {
-	X float64
-	Y float64
-}
 
 const (
 	DirectionRight = 1.0
@@ -25,45 +14,41 @@ const (
 
 type Player struct {
 	// Game data
-	cell Cell
-	maze *maze.Maze
+	pos common.Pos
 	// Data for drawing
 	width     float64
 	height    float64
-	screenPos Vector
+	screenPos common.Vector
 	direction float64
 	sprite    *ebiten.Image
 }
 
-func NewPlayer(maze *maze.Maze, col, row int) *Player {
+func NewPlayer(col, row int, width, height float64) *Player {
 	return &Player{
-		cell:      Cell{col: col, row: row},
-		maze:      maze,
-		width:     maze.ColumnWidth(),
-		height:    maze.RowHeight(),
-		screenPos: Vector{},
+		pos:       common.Pos{Col: col, Row: row},
+		width:     width,
+		height:    height,
+		screenPos: common.Vector{},
 		direction: 1,
 		sprite:    assets.PlayerSprite,
 	}
 }
 
-func (p *Player) Update() {
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) && !p.maze.IsBottomWall(p.cell.col, p.cell.row) {
-		p.screenPos.Y += p.height
-		p.cell.row++
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) && !p.maze.IsTopWall(p.cell.col, p.cell.row) {
-		p.screenPos.Y -= p.height
-		p.cell.row--
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) && !p.maze.IsLeftWall(p.cell.col, p.cell.row) {
-		p.screenPos.X -= p.width
-		p.cell.col--
+func (p *Player) Pos() common.Pos {
+	return p.pos
+}
+
+func (p *Player) Update(col, row int) {
+	hStep := col - p.pos.Col
+
+	p.pos.Col = col
+	p.pos.Row = row
+	p.screenPos.X = float64(p.pos.Col) * p.width
+	p.screenPos.Y = float64(p.pos.Row) * p.height
+
+	if hStep < 0 {
 		p.direction = DirectionLeft
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) && !p.maze.IsRightWall(p.cell.col, p.cell.row) {
-		p.screenPos.X += p.width
-		p.cell.col++
+	} else if hStep > 0 {
 		p.direction = DirectionRight
 	}
 }

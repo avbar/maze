@@ -49,11 +49,3 @@ func (m *Maze) Cols() int {
 func (m *Maze) Rows() int {
 	return m.rows
 }
-
-func (m *Maze) ColumnWidth() float64 {
-	return m.colWidth
-}
-
-func (m *Maze) RowHeight() float64 {
-	return m.rowHeight
-}
