@@ -25,11 +25,7 @@ func (m *Maze) Generate() {
 			if randomBool() || sets[j] == sets[j+1] {
 				m.vWalls[i][j] = true
 			} else {
-				for k := m.cols - 1; k > j; k-- {
-					if sets[k] == sets[j+1] {
-						sets[k] = sets[j]
-					}
-				}
+				unionSets(sets[j], sets[j+1], sets)
 			}
 		}
 		m.vWalls[i][m.cols-1] = true
@@ -61,25 +57,19 @@ func (m *Maze) Generate() {
 			// Last row
 			for j := 0; j < m.cols; j++ {
 				m.hWalls[i][j] = true
-			}
 
-			for j := 0; j < m.cols-1; j++ {
-				if sets[j] != sets[j+1] {
+				if (j < m.cols-1) && (sets[j] != sets[j+1]) {
 					m.vWalls[i][j] = false
-
-					for k := m.cols - 1; k > j; k-- {
-						if sets[k] == sets[j+1] {
-							sets[k] = sets[j]
-						}
-					}
+					unionSets(sets[j], sets[j+1], sets)
 				}
 			}
+
 		}
 	}
 }
 
-func allocateWalls(cols, rows int) walls {
-	w := make(walls, rows)
+func allocateWalls(cols, rows int) Walls {
+	w := make(Walls, rows)
 	for i := 0; i < rows; i++ {
 		w[i] = make([]bool, cols)
 	}
@@ -94,4 +84,12 @@ func (m *Maze) initWalls() {
 
 func randomBool() bool {
 	return rand.Intn(2) == 1
+}
+
+func unionSets(set1, set2 int, sets []int) {
+	for i := 0; i < len(sets); i++ {
+		if sets[i] == set2 {
+			sets[i] = set1
+		}
+	}
 }
