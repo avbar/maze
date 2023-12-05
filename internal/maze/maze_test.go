@@ -2,8 +2,10 @@ package maze_test
 
 import (
 	"math/rand"
+	"reflect"
 	"testing"
 
+	"github.com/avbar/maze/internal/common"
 	"github.com/avbar/maze/internal/maze"
 )
 
@@ -41,7 +43,7 @@ func TestGenerate(t *testing.T) {
 		args args
 	}{
 		{
-			name: "maze 10x10",
+			name: "generate maze 10x10",
 			args: args{
 				cols: 10,
 				rows: 10,
@@ -82,6 +84,55 @@ func TestGenerate(t *testing.T) {
 
 			if !isEqual(tt.args.cols, tt.args.rows, tt.args.walls, m) {
 				t.Errorf("Generated maze is different")
+			}
+		})
+	}
+}
+
+func TestSolve(t *testing.T) {
+	type args struct {
+		cols   int
+		rows   int
+		start  common.Pos
+		finish common.Pos
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want common.Path
+	}{
+		{
+			name: "solve maze 10x10",
+			args: args{
+				cols: 10,
+				rows: 10,
+				start: common.Pos{
+					Col: 9,
+					Row: 0,
+				},
+				finish: common.Pos{
+					Col: 4,
+					Row: 9,
+				},
+			},
+			want: common.Path{
+				{Col: 9, Row: 1}, {Col: 8, Row: 1}, {Col: 7, Row: 1}, {Col: 6, Row: 1},
+				{Col: 5, Row: 1}, {Col: 5, Row: 2}, {Col: 6, Row: 2}, {Col: 6, Row: 3},
+				{Col: 6, Row: 4}, {Col: 6, Row: 5}, {Col: 6, Row: 6}, {Col: 6, Row: 7},
+				{Col: 6, Row: 8}, {Col: 6, Row: 9}, {Col: 5, Row: 9}, {Col: 4, Row: 9},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(4)
+			m := maze.NewMaze(tt.args.cols, tt.args.rows, 0, 0)
+			path := m.Solve(tt.args.start, tt.args.finish)
+
+			if !reflect.DeepEqual(tt.want, path) {
+				t.Errorf("Wrong path in the maze")
 			}
 		})
 	}
