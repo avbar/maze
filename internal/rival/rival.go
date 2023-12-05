@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	DirectionRight = 1.0
-	DirectionLeft  = -1.0
+	directionRight = -1.0
+	directionLeft  = 1.0
 )
 
 type Rival struct {
@@ -31,13 +31,19 @@ func NewRival(col, row int, width, height float64, path common.Path) *Rival {
 		width:     width,
 		height:    height,
 		screenPos: common.Vector{X: float64(col) * width, Y: float64(row) * height},
-		direction: 1,
+		direction: directionLeft,
 		sprite:    assets.RivalSprite,
 	}
 }
 
 func (r *Rival) Pos() common.Pos {
 	return r.pos
+}
+
+func (r *Rival) SetPos(col, row int, path common.Path) {
+	r.pos = common.Pos{Col: col, Row: row}
+	r.path = append(common.Path{r.pos}, path...)
+	r.Update()
 }
 
 func (r *Rival) Update() {
@@ -56,9 +62,9 @@ func (r *Rival) Update() {
 	r.screenPos.Y = float64(r.pos.Row) * r.height
 
 	if hStep < 0 {
-		r.direction = DirectionRight
+		r.direction = directionLeft
 	} else if hStep > 0 {
-		r.direction = DirectionLeft
+		r.direction = directionRight
 	}
 }
 

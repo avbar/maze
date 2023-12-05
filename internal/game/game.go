@@ -63,13 +63,9 @@ func (g *Game) Reset() {
 	g.cookie = cookie.NewCookie(cookieCol, rows-1, colWidth, rowHeight)
 }
 
-func (g *Game) Update() error {
-	if g.player.Pos() == g.cookie.Pos() ||
-		g.rival.Pos() == g.cookie.Pos() {
-		g.Reset()
-	}
-
+func (g *Game) playerNextStep() common.Pos {
 	col, row := g.player.Pos().Col, g.player.Pos().Row
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) && !g.maze.IsBottomWall(col, row) {
 		row++
 	}
@@ -83,12 +79,37 @@ func (g *Game) Update() error {
 		col++
 	}
 
-	g.player.Update(col, row)
+	return common.Pos{
+		Col: col,
+		Row: row,
+	}
+}
 
-	g.rivalTimer.Update()
-	if g.rivalTimer.IsReady() {
-		g.rivalTimer.Reset()
-		g.rival.Update()
+func (g *Game) Update() error {
+	if g.player.Pos() == g.cookie.Pos() || g.rival.Pos() == g.cookie.Pos() {
+		// Game is over, start new game
+		g.Reset()
+	}
+
+	if g.player.Pos() == g.rival.Pos() {
+		// Scatter players randomly
+		cols := g.maze.Cols()
+		rows := g.maze.Rows()
+		g.player.Update(rand.Intn(cols), rand.Intn(rows))
+
+		rivalCol, rivalRow := rand.Intn(cols), rand.Intn(rows)
+		path := g.maze.Solve(common.Pos{Col: rivalCol, Row: rivalRow}, g.cookie.Pos())
+		g.rival.SetPos(rivalCol, rivalRow, path)
+	} else {
+		// Next step
+		pos := g.playerNextStep()
+		g.player.Update(pos.Col, pos.Row)
+
+		g.rivalTimer.Update()
+		if g.rivalTimer.IsReady() {
+			g.rivalTimer.Reset()
+			g.rival.Update()
+		}
 	}
 
 	return nil

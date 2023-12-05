@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	DirectionRight = 1.0
-	DirectionLeft  = -1.0
+	directionRight = 1.0
+	directionLeft  = -1.0
 )
 
 type Player struct {
@@ -29,7 +29,7 @@ func NewPlayer(col, row int, width, height float64) *Player {
 		width:     width,
 		height:    height,
 		screenPos: common.Vector{},
-		direction: 1,
+		direction: directionRight,
 		sprite:    assets.PlayerSprite,
 	}
 }
@@ -47,9 +47,9 @@ func (p *Player) Update(col, row int) {
 	p.screenPos.Y = float64(p.pos.Row) * p.height
 
 	if hStep < 0 {
-		p.direction = DirectionLeft
+		p.direction = directionLeft
 	} else if hStep > 0 {
-		p.direction = DirectionRight
+		p.direction = directionRight
 	}
 }
 
