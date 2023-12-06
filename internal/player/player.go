@@ -13,8 +13,9 @@ const (
 )
 
 type Player struct {
-	// Game data
+	// Maze position
 	pos common.Pos
+
 	// Data for drawing
 	width     float64
 	height    float64
@@ -23,12 +24,17 @@ type Player struct {
 	sprite    *ebiten.Image
 }
 
-func NewPlayer(col, row int, width, height float64) *Player {
+func NewPlayer(pos common.Pos, width, height float64) *Player {
+	screenPos := common.Vector{
+		X: float64(pos.Col) * width,
+		Y: float64(pos.Row) * height,
+	}
+
 	return &Player{
-		pos:       common.Pos{Col: col, Row: row},
+		pos:       pos,
 		width:     width,
 		height:    height,
-		screenPos: common.Vector{},
+		screenPos: screenPos,
 		direction: directionRight,
 		sprite:    assets.PlayerSprite,
 	}
@@ -38,11 +44,10 @@ func (p *Player) Pos() common.Pos {
 	return p.pos
 }
 
-func (p *Player) Update(col, row int) {
-	hStep := col - p.pos.Col
+func (p *Player) Update(pos common.Pos) {
+	hStep := pos.Col - p.pos.Col
 
-	p.pos.Col = col
-	p.pos.Row = row
+	p.pos = pos
 	p.screenPos.X = float64(p.pos.Col) * p.width
 	p.screenPos.Y = float64(p.pos.Row) * p.height
 

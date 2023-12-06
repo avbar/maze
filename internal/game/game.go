@@ -8,7 +8,6 @@ import (
 	"github.com/avbar/maze/internal/cookie"
 	"github.com/avbar/maze/internal/maze"
 	"github.com/avbar/maze/internal/player"
-	"github.com/avbar/maze/internal/rival"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -19,7 +18,8 @@ type Game struct {
 	screenHeight int
 	maze         *maze.Maze
 	player       *player.Player
-	rival        *rival.Rival
+	rival        *player.Player
+	rivalPath    common.Path
 	rivalTimer   *common.Timer
 	cookie       *cookie.Cookie
 }
@@ -29,23 +29,16 @@ func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
 	rowHeight := float64(screenHeight) / float64(rows)
 
 	maze := maze.NewMaze(cols, rows, colWidth, rowHeight)
-	cookieCol := rand.Intn(cols)
-	path := maze.Solve(common.Pos{Col: cols - 1, Row: 0}, common.Pos{Col: cookieCol, Row: rows - 1})
 
-	player := player.NewPlayer(0, 0, colWidth, rowHeight)
-	rival := rival.NewRival(cols-1, 0, colWidth, rowHeight, path)
-	rivalTimer := common.NewTimer(500 * time.Millisecond)
-	cookie := cookie.NewCookie(cookieCol, rows-1, colWidth, rowHeight)
-
-	return &Game{
+	game := &Game{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		maze:         maze,
-		player:       player,
-		rival:        rival,
-		rivalTimer:   rivalTimer,
-		cookie:       cookie,
 	}
+
+	game.Reset()
+
+	return game
 }
 
 func (g *Game) Reset() {
@@ -54,16 +47,29 @@ func (g *Game) Reset() {
 	colWidth := float64(g.screenWidth) / float64(cols)
 	rowHeight := float64(g.screenHeight) / float64(rows)
 
-	g.maze = maze.NewMaze(cols, rows, colWidth, rowHeight)
-	cookieCol := rand.Intn(cols)
-	path := g.maze.Solve(common.Pos{Col: cols - 1, Row: 0}, common.Pos{Col: cookieCol, Row: rows - 1})
+	g.maze.Generate()
 
-	g.player = player.NewPlayer(0, 0, colWidth, rowHeight)
-	g.rival = rival.NewRival(cols-1, 0, colWidth, rowHeight, path)
-	g.cookie = cookie.NewCookie(cookieCol, rows-1, colWidth, rowHeight)
+	playerPos := common.Pos{
+		Col: 0,
+		Row: 0,
+	}
+	rivalPos := common.Pos{
+		Col: cols - 1,
+		Row: 0,
+	}
+	cookiePos := common.Pos{
+		Col: rand.Intn(cols),
+		Row: rows - 1,
+	}
+
+	g.player = player.NewPlayer(playerPos, colWidth, rowHeight)
+	g.rival = player.NewRival(rivalPos, colWidth, rowHeight)
+	g.rivalPath = g.maze.Solve(rivalPos, cookiePos)
+	g.rivalTimer = common.NewTimer(500 * time.Millisecond)
+	g.cookie = cookie.NewCookie(cookiePos, colWidth, rowHeight)
 }
 
-func (g *Game) playerNextStep() common.Pos {
+func (g *Game) playerStep() common.Pos {
 	col, row := g.player.Pos().Col, g.player.Pos().Row
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) && !g.maze.IsBottomWall(col, row) {
@@ -85,6 +91,16 @@ func (g *Game) playerNextStep() common.Pos {
 	}
 }
 
+func (g *Game) rivalStep() common.Pos {
+	if len(g.rivalPath) == 0 {
+		return g.rival.Pos()
+	}
+
+	pos := g.rivalPath[0]
+	g.rivalPath = g.rivalPath[1:]
+	return pos
+}
+
 func (g *Game) Update() error {
 	if g.player.Pos() == g.cookie.Pos() || g.rival.Pos() == g.cookie.Pos() {
 		// Game is over, start new game
@@ -95,20 +111,27 @@ func (g *Game) Update() error {
 		// Scatter players randomly
 		cols := g.maze.Cols()
 		rows := g.maze.Rows()
-		g.player.Update(rand.Intn(cols), rand.Intn(rows))
 
-		rivalCol, rivalRow := rand.Intn(cols), rand.Intn(rows)
-		path := g.maze.Solve(common.Pos{Col: rivalCol, Row: rivalRow}, g.cookie.Pos())
-		g.rival.SetPos(rivalCol, rivalRow, path)
+		playerPos := common.Pos{
+			Col: rand.Intn(cols),
+			Row: rand.Intn(rows),
+		}
+		rivalPos := common.Pos{
+			Col: rand.Intn(cols),
+			Row: rand.Intn(rows),
+		}
+
+		g.player.Update(playerPos)
+		g.rival.Update(rivalPos)
+		g.rivalPath = g.maze.Solve(rivalPos, g.cookie.Pos())
 	} else {
 		// Next step
-		pos := g.playerNextStep()
-		g.player.Update(pos.Col, pos.Row)
+		g.player.Update(g.playerStep())
 
 		g.rivalTimer.Update()
 		if g.rivalTimer.IsReady() {
 			g.rivalTimer.Reset()
-			g.rival.Update()
+			g.rival.Update(g.rivalStep())
 		}
 	}
 

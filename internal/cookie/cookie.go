@@ -8,8 +8,9 @@ import (
 )
 
 type Cookie struct {
-	// Game data
+	// Maze position
 	pos common.Pos
+
 	// Data for drawing
 	width     float64
 	height    float64
@@ -17,12 +18,17 @@ type Cookie struct {
 	sprite    *ebiten.Image
 }
 
-func NewCookie(col, row int, width, height float64) *Cookie {
+func NewCookie(pos common.Pos, width, height float64) *Cookie {
+	screenPos := common.Vector{
+		X: float64(pos.Col) * width,
+		Y: float64(pos.Row) * height,
+	}
+
 	return &Cookie{
-		pos:       common.Pos{Col: col, Row: row},
+		pos:       pos,
 		width:     width,
 		height:    height,
-		screenPos: common.Vector{X: float64(col) * width, Y: float64(row) * height},
+		screenPos: screenPos,
 		sprite:    assets.CookieSprite,
 	}
 }

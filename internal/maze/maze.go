@@ -3,27 +3,26 @@ package maze
 type Walls [][]bool
 
 type Maze struct {
-	// Maze settings
-	cols   int
-	rows   int
+	// Size
+	cols int
+	rows int
+	// Vertical walls
 	vWalls Walls
+	// Horizontal walls
 	hWalls Walls
+
 	// Data for drawing
 	colWidth  float64
 	rowHeight float64
 }
 
 func NewMaze(cols, rows int, colWidth, rowHeight float64) *Maze {
-	m := &Maze{
+	return &Maze{
 		cols:      cols,
 		rows:      rows,
 		colWidth:  colWidth,
 		rowHeight: rowHeight,
 	}
-
-	m.Generate()
-
-	return m
 }
 
 func (m *Maze) IsLeftWall(col, row int) bool {
