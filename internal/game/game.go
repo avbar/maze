@@ -13,9 +13,19 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+type Mode int
+
+const (
+	ModeTitle Mode = iota
+	ModeGame
+	ModeWin
+	ModeLose
+)
+
 type Game struct {
 	screenWidth  int
 	screenHeight int
+	mode         Mode
 	maze         *maze.Maze
 	player       *player.Player
 	rival        *player.Player
@@ -33,6 +43,7 @@ func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
 	game := &Game{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
+		mode:         ModeTitle,
 		maze:         maze,
 	}
 
@@ -101,37 +112,58 @@ func (g *Game) rivalStep() common.Pos {
 	return pos
 }
 
-func (g *Game) Update() error {
-	if g.player.Pos() == g.cookie.Pos() || g.rival.Pos() == g.cookie.Pos() {
-		// Game is over, start new game
-		g.Reset()
+func (g *Game) isStartKeyPressed() bool {
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) ||
+		inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		return true
 	}
+	return false
+}
 
-	if g.player.Pos() == g.rival.Pos() {
-		// Scatter players randomly
-		cols := g.maze.Cols()
-		rows := g.maze.Rows()
-
-		playerPos := common.Pos{
-			Col: rand.Intn(cols),
-			Row: rand.Intn(rows),
-		}
-		rivalPos := common.Pos{
-			Col: rand.Intn(cols),
-			Row: rand.Intn(rows),
+func (g *Game) Update() error {
+	switch g.mode {
+	case ModeTitle:
+		if g.isStartKeyPressed() {
+			g.mode = ModeGame
 		}
 
-		g.player.Update(playerPos)
-		g.rival.Update(rivalPos)
-		g.rivalPath = g.maze.Solve(rivalPos, g.cookie.Pos())
-	} else {
-		// Next step
-		g.player.Update(g.playerStep())
+	case ModeGame:
+		if g.player.Pos() == g.cookie.Pos() {
+			g.mode = ModeWin
+		} else if g.rival.Pos() == g.cookie.Pos() {
+			g.mode = ModeLose
+		} else if g.player.Pos() == g.rival.Pos() {
+			// Scatter players randomly
+			cols := g.maze.Cols()
+			rows := g.maze.Rows()
 
-		g.rivalTimer.Update()
-		if g.rivalTimer.IsReady() {
-			g.rivalTimer.Reset()
-			g.rival.Update(g.rivalStep())
+			playerPos := common.Pos{
+				Col: rand.Intn(cols),
+				Row: rand.Intn(rows),
+			}
+			rivalPos := common.Pos{
+				Col: rand.Intn(cols),
+				Row: rand.Intn(rows),
+			}
+
+			g.player.Update(playerPos)
+			g.rival.Update(rivalPos)
+			g.rivalPath = g.maze.Solve(rivalPos, g.cookie.Pos())
+		} else {
+			// Next step
+			g.player.Update(g.playerStep())
+
+			g.rivalTimer.Update()
+			if g.rivalTimer.IsReady() {
+				g.rivalTimer.Reset()
+				g.rival.Update(g.rivalStep())
+			}
+		}
+
+	case ModeWin, ModeLose:
+		if g.isStartKeyPressed() {
+			g.mode = ModeGame
+			g.Reset()
 		}
 	}
 
@@ -143,6 +175,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.cookie.Draw(screen)
 	g.player.Draw(screen)
 	g.rival.Draw(screen)
+
+	if g.mode != ModeGame {
+		g.drawTitle(screen)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
