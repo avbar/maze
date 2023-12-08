@@ -130,8 +130,10 @@ func (g *Game) Update() error {
 	case ModeGame:
 		if g.player.Pos() == g.cookie.Pos() {
 			g.mode = ModeWin
+			g.player.Win()
 		} else if g.rival.Pos() == g.cookie.Pos() {
 			g.mode = ModeLose
+			g.rival.Win()
 		} else if g.player.Pos() == g.rival.Pos() {
 			// Scatter players randomly
 			cols := g.maze.Cols()
@@ -172,7 +174,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.maze.Draw(screen)
-	g.cookie.Draw(screen)
+	if g.mode != ModeWin && g.mode != ModeLose {
+		g.cookie.Draw(screen)
+	}
 	g.player.Draw(screen)
 	g.rival.Draw(screen)
 

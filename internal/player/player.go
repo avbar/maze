@@ -22,6 +22,7 @@ type Player struct {
 	screenPos common.Vector
 	direction float64
 	sprite    *ebiten.Image
+	spriteWin *ebiten.Image
 }
 
 func NewPlayer(pos common.Pos, width, height float64) *Player {
@@ -37,11 +38,16 @@ func NewPlayer(pos common.Pos, width, height float64) *Player {
 		screenPos: screenPos,
 		direction: directionRight,
 		sprite:    assets.PlayerSprite,
+		spriteWin: assets.PlayerWinSprite,
 	}
 }
 
 func (p *Player) Pos() common.Pos {
 	return p.pos
+}
+
+func (p *Player) Win() {
+	p.sprite = p.spriteWin
 }
 
 func (p *Player) Update(pos common.Pos) {
