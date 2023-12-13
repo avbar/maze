@@ -29,7 +29,7 @@ func (m *Maze) Draw(screen *ebiten.Image) {
 			x0, y0 := float32(j)*float32(m.colWidth), float32(i)*float32(m.rowHeight)
 			// Bottom right corner
 			x1, y1 := float32(j+1)*float32(m.colWidth), float32(i+1)*float32(m.rowHeight)
-			// Left wall
+			// Right wall
 			if m.vWalls[i][j] {
 				vector.StrokeLine(screen, x1, y0, x1, y1, 1, lineColor, false)
 			}
