@@ -32,6 +32,8 @@ type Game struct {
 	rivalPath    common.Path
 	rivalTimer   *common.Timer
 	cookie       *cookie.Cookie
+	playerPoints int
+	rivalPoints  int
 }
 
 func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
@@ -131,9 +133,11 @@ func (g *Game) Update() error {
 		if g.player.Pos() == g.cookie.Pos() {
 			g.mode = ModeWin
 			g.player.Win()
+			g.playerPoints++
 		} else if g.rival.Pos() == g.cookie.Pos() {
 			g.mode = ModeLose
 			g.rival.Win()
+			g.rivalPoints++
 		} else if g.player.Pos() == g.rival.Pos() {
 			// Scatter players randomly
 			cols := g.maze.Cols()
