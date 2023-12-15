@@ -1,6 +1,6 @@
 module github.com/avbar/maze
 
-go 1.21.4
+go 1.20
 
 require (
 	github.com/ebitenui/ebitenui v0.5.5
