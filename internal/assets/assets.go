@@ -17,6 +17,10 @@ var (
 	RivalSprite     = mustLoadImage("png/brown_gopher.png")
 	RivalWinSprite  = mustLoadImage("png/brown_gopher_win.png")
 	CookieSprite    = mustLoadImage("png/cookie.png")
+
+	SliderTrackIdle   = mustLoadImage("png/menu/slider-track-idle.png")
+	SliderHandleIdle  = mustLoadImage("png/menu/slider-handle-idle.png")
+	SliderHandleHover = mustLoadImage("png/menu/slider-handle-hover.png")
 )
 
 func mustLoadImage(name string) *ebiten.Image {

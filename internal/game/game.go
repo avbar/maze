@@ -34,9 +34,10 @@ type Game struct {
 	cookie       *cookie.Cookie
 	playerPoints int
 	rivalPoints  int
+	showMenu     func()
 }
 
-func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
+func NewGame(screenWidth, screenHeight int, cols, rows int, showMenu func()) *Game {
 	colWidth := float64(screenWidth) / float64(cols)
 	rowHeight := float64(screenHeight) / float64(rows)
 
@@ -47,6 +48,7 @@ func NewGame(screenWidth, screenHeight int, cols, rows int) *Game {
 		screenHeight: screenHeight,
 		mode:         ModeTitle,
 		maze:         maze,
+		showMenu:     showMenu,
 	}
 
 	game.Reset()
@@ -122,7 +124,16 @@ func (g *Game) isStartKeyPressed() bool {
 	return false
 }
 
-func (g *Game) Update() error {
+func (g *Game) isMenuKeyPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyF10)
+}
+
+func (g *Game) Update() {
+	if g.isMenuKeyPressed() {
+		g.showMenu()
+		return
+	}
+
 	switch g.mode {
 	case ModeTitle:
 		if g.isStartKeyPressed() {
@@ -172,19 +183,17 @@ func (g *Game) Update() error {
 			g.Reset()
 		}
 	}
-
-	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.maze.Draw(screen)
-	if g.mode != ModeWin && g.mode != ModeLose {
+	if g.mode == ModeTitle || g.mode == ModeGame {
 		g.cookie.Draw(screen)
 	}
 	g.player.Draw(screen)
 	g.rival.Draw(screen)
 
-	if g.mode != ModeGame {
+	if g.mode == ModeTitle || g.mode == ModeWin || g.mode == ModeLose {
 		g.drawTitle(screen)
 	}
 }

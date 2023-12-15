@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/avbar/maze/internal/game"
+	"github.com/avbar/maze/internal/gameengine"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -16,7 +16,7 @@ const (
 )
 
 func main() {
-	g := game.NewGame(ScreenWidth, ScreenHeight, Cols, Rows)
+	g := gameengine.NewGameEngine(ScreenWidth, ScreenHeight, Cols, Rows)
 
 	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Maze")
