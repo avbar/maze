@@ -27,12 +27,7 @@ func (m *Menu) addButtons() {
 	}))
 
 	c.AddChild(newButton("Cancel", func() {
-		if m.settings != m.prevSettings {
-			m.settings = m.prevSettings
-			*m.sliderValues[sliderNameCols] = m.prevSettings.Cols
-			*m.sliderValues[sliderNameRows] = m.prevSettings.Rows
-		}
-		m.close()
+		m.Cancel()
 	}))
 }
 

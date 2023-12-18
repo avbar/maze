@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	sliderNameCols = "Columns"
-	sliderNameRows = "Rows"
+	sliderNameCols  = "Columns"
+	sliderNameRows  = "Rows"
+	sliderNameSpeed = "Speed"
 )
 
 type Menu struct {
@@ -47,12 +48,13 @@ func NewMenu(settings common.Settings, close func()) *Menu {
 		settings:     settings,
 		prevSettings: settings,
 		ui:           ui,
-		sliderValues: make(map[string]*int, 2),
+		sliderValues: make(map[string]*int, 3),
 		close:        close,
 	}
 
-	m.addSlider(sliderNameCols, &m.settings.Cols)
-	m.addSlider(sliderNameRows, &m.settings.Rows)
+	m.addSlider(sliderNameCols, 5, 50, &m.settings.Cols)
+	m.addSlider(sliderNameRows, 5, 50, &m.settings.Rows)
+	m.addSlider(sliderNameSpeed, 1, 10, &m.settings.Speed)
 	m.addButtons()
 
 	return m
@@ -66,14 +68,19 @@ func (m *Menu) isCancelKeyPressed() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeyEscape)
 }
 
+func (m *Menu) Cancel() {
+	if m.settings != m.prevSettings {
+		m.settings = m.prevSettings
+		*m.sliderValues[sliderNameCols] = m.prevSettings.Cols
+		*m.sliderValues[sliderNameRows] = m.prevSettings.Rows
+		*m.sliderValues[sliderNameSpeed] = m.prevSettings.Speed
+	}
+	m.close()
+}
+
 func (m *Menu) Update() {
 	if m.isCancelKeyPressed() {
-		if m.settings != m.prevSettings {
-			m.settings = m.prevSettings
-			*m.sliderValues[sliderNameCols] = m.prevSettings.Cols
-			*m.sliderValues[sliderNameRows] = m.prevSettings.Rows
-		}
-		m.close()
+		m.Cancel()
 		return
 	}
 

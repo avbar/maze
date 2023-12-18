@@ -34,20 +34,22 @@ type Game struct {
 	cookie       *cookie.Cookie
 	playerPoints int
 	rivalPoints  int
+	speed        int
 	showMenu     func()
 }
 
-func NewGame(screenWidth, screenHeight int, cols, rows int, showMenu func()) *Game {
-	colWidth := float64(screenWidth) / float64(cols)
-	rowHeight := float64(screenHeight) / float64(rows)
+func NewGame(screenWidth, screenHeight int, settings common.Settings, showMenu func()) *Game {
+	colWidth := float64(screenWidth) / float64(settings.Cols)
+	rowHeight := float64(screenHeight) / float64(settings.Rows)
 
-	maze := maze.NewMaze(cols, rows, colWidth, rowHeight)
+	maze := maze.NewMaze(settings.Cols, settings.Rows, colWidth, rowHeight)
 
 	game := &Game{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		mode:         ModeTitle,
 		maze:         maze,
+		speed:        settings.Speed,
 		showMenu:     showMenu,
 	}
 
@@ -80,8 +82,12 @@ func (g *Game) Reset() {
 	g.player = player.NewPlayer(playerPos, colWidth, rowHeight)
 	g.rival = player.NewRival(rivalPos, colWidth, rowHeight)
 	g.rivalPath = g.maze.Solve(rivalPos, cookiePos)
-	g.rivalTimer = common.NewTimer(500 * time.Millisecond)
+	g.rivalTimer = common.NewTimer(g.timerDuration())
 	g.cookie = cookie.NewCookie(cookiePos, colWidth, rowHeight)
+}
+
+func (g *Game) timerDuration() time.Duration {
+	return time.Duration(100*(11-g.speed)) * time.Millisecond
 }
 
 func (g *Game) playerStep() common.Pos {

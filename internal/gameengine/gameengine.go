@@ -22,18 +22,14 @@ type GameEngine struct {
 	scene        Scene
 }
 
-func NewGameEngine(screenWidth, screenHeight int, cols, rows int) *GameEngine {
-	settings := common.Settings{
-		Cols: cols,
-		Rows: rows,
-	}
+func NewGameEngine(screenWidth, screenHeight int, settings common.Settings) *GameEngine {
 	g := &GameEngine{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		settings:     settings,
 	}
 
-	g.game = game.NewGame(screenWidth, screenHeight, cols, rows, g.switchToMenu)
+	g.game = game.NewGame(screenWidth, screenHeight, settings, g.switchToMenu)
 	g.menu = menu.NewMenu(settings, g.switchToGame)
 	g.scene = g.game
 
@@ -47,7 +43,7 @@ func (g *GameEngine) switchToMenu() {
 func (g *GameEngine) switchToGame() {
 	if g.settings != g.menu.Settings() {
 		g.settings = g.menu.Settings()
-		g.game = game.NewGame(g.screenWidth, g.screenHeight, g.settings.Cols, g.settings.Rows, g.switchToMenu)
+		g.game = game.NewGame(g.screenWidth, g.screenHeight, g.settings, g.switchToMenu)
 	}
 	g.scene = g.game
 }

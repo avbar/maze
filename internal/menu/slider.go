@@ -11,7 +11,7 @@ import (
 	"golang.org/x/image/font"
 )
 
-func (m *Menu) addSlider(name string, value *int) {
+func (m *Menu) addSlider(name string, min, max int, value *int) {
 	sliderRes := newSliderResources()
 	labelRes := newLabelResources()
 
@@ -43,7 +43,7 @@ func (m *Menu) addSlider(name string, value *int) {
 		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 			Position: widget.RowLayoutPositionCenter,
 		}), widget.WidgetOpts.MinSize(300, 6)),
-		widget.SliderOpts.MinMax(5, 50),
+		widget.SliderOpts.MinMax(min, max),
 		widget.SliderOpts.Images(sliderRes.trackImage, sliderRes.handle),
 		widget.SliderOpts.FixedHandleSize(sliderRes.handleSize),
 		widget.SliderOpts.TrackOffset(5),
