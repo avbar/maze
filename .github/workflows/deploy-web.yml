@@ -27,6 +27,8 @@ jobs:
           GOARCH: wasm
       - run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js web
       - run: go test -v ./...
+        env:
+          DISPLAY: ':99.0'
 
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v2
