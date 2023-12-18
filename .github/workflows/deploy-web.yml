@@ -20,15 +20,15 @@ jobs:
           go-version-file: "go.mod"
       - run: |
           sudo apt-get update
-          sudo apt-get install libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev
+          sudo apt-get install libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev xvfb
       - run: go build -o web/maze.wasm cmd/app/main.go
         env:
           GOOS: js
           GOARCH: wasm
       - run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js web
-      - run: go test -v ./...
+      - run: xvfb-run --auto-servernum go test -v ./...
         env:
-          DISPLAY: ':99.0'
+          DISPLAY: ":99.0"
 
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v2
