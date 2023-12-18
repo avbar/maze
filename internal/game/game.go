@@ -5,9 +5,7 @@ import (
 	"time"
 
 	"github.com/avbar/maze/internal/common"
-	"github.com/avbar/maze/internal/cookie"
 	"github.com/avbar/maze/internal/maze"
-	"github.com/avbar/maze/internal/player"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -27,11 +25,11 @@ type Game struct {
 	screenHeight int
 	mode         Mode
 	maze         *maze.Maze
-	player       *player.Player
-	rival        *player.Player
+	player       *Player
+	rival        *Player
 	rivalPath    common.Path
-	rivalTimer   *common.Timer
-	cookie       *cookie.Cookie
+	rivalTimer   *Timer
+	cookie       *Cookie
 	playerPoints int
 	rivalPoints  int
 	speed        int
@@ -79,11 +77,11 @@ func (g *Game) Reset() {
 		Row: rows - 1,
 	}
 
-	g.player = player.NewPlayer(playerPos, colWidth, rowHeight)
-	g.rival = player.NewRival(rivalPos, colWidth, rowHeight)
+	g.player = NewPlayer(playerPos, colWidth, rowHeight)
+	g.rival = NewRival(rivalPos, colWidth, rowHeight)
 	g.rivalPath = g.maze.Solve(rivalPos, cookiePos)
-	g.rivalTimer = common.NewTimer(g.timerDuration())
-	g.cookie = cookie.NewCookie(cookiePos, colWidth, rowHeight)
+	g.rivalTimer = NewTimer(g.timerDuration())
+	g.cookie = NewCookie(cookiePos, colWidth, rowHeight)
 }
 
 func (g *Game) timerDuration() time.Duration {

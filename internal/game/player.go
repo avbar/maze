@@ -1,4 +1,4 @@
-package player
+package game
 
 import (
 	"github.com/avbar/maze/internal/assets"
