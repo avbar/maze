@@ -14,8 +14,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '1.20'
       - run: go build -o web/maze.wasm cmd/app/main.go
@@ -23,10 +23,11 @@ jobs:
           GOOS: js
           GOARCH: wasm
       - run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js web
+      - run: go test ./...
 
-      - uses: actions/configure-pages@v2
-      - uses: actions/upload-pages-artifact@v1
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v2
         with:
           path: web
       - id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v3

@@ -81,6 +81,7 @@ func TestGenerate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rand.Seed(4)
 			m := maze.NewMaze(tt.args.cols, tt.args.rows, 0, 0)
+			m.Generate()
 
 			if !isEqual(tt.args.cols, tt.args.rows, tt.args.walls, m) {
 				t.Errorf("Generated maze is different")
@@ -129,6 +130,7 @@ func TestSolve(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rand.Seed(4)
 			m := maze.NewMaze(tt.args.cols, tt.args.rows, 0, 0)
+			m.Generate()
 			path := m.Solve(tt.args.start, tt.args.finish)
 
 			if !reflect.DeepEqual(tt.want, path) {
