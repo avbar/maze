@@ -1,38 +1,51 @@
 name: deploy-web
+
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 jobs:
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - run: |
+      - name: Install dependencies
+        run: |
           sudo apt-get update
           sudo apt-get install libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev xvfb
-      - run: go build -o web/maze.wasm cmd/app/main.go
+      - name: Build app
+        run: go build -o web/maze.wasm cmd/app/main.go
         env:
           GOOS: js
           GOARCH: wasm
-      - run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js web
-      - run: xvfb-run --auto-servernum go test -v ./...
+      - name: Copy wasm_exec.js to execute the binary
+        run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js web
+      - name: Run tests
+        run: xvfb-run --auto-servernum go test -v ./...
         env:
           DISPLAY: ":99.0"
 
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v2
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
           path: web
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v3
