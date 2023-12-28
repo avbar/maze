@@ -1,8 +1,8 @@
-package game
+package player
 
 import (
 	"github.com/avbar/maze/internal/assets"
-	"github.com/avbar/maze/internal/common"
+	"github.com/avbar/maze/internal/game/coord"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -14,19 +14,19 @@ const (
 
 type Player struct {
 	// Maze position
-	pos common.Pos
+	pos coord.Pos
 
 	// Data for drawing
 	width     float64
 	height    float64
-	screenPos common.Vector
+	screenPos coord.Vector
 	direction float64
 	sprite    *ebiten.Image
 	spriteWin *ebiten.Image
 }
 
-func NewPlayer(pos common.Pos, width, height float64) *Player {
-	screenPos := common.Vector{
+func NewPlayer(pos coord.Pos, width, height float64) *Player {
+	screenPos := coord.Vector{
 		X: float64(pos.Col) * width,
 		Y: float64(pos.Row) * height,
 	}
@@ -42,7 +42,7 @@ func NewPlayer(pos common.Pos, width, height float64) *Player {
 	}
 }
 
-func (p *Player) Pos() common.Pos {
+func (p *Player) Pos() coord.Pos {
 	return p.pos
 }
 
@@ -50,7 +50,7 @@ func (p *Player) Win() {
 	p.sprite = p.spriteWin
 }
 
-func (p *Player) Update(pos common.Pos) {
+func (p *Player) Update(pos coord.Pos) {
 	hStep := pos.Col - p.pos.Col
 
 	p.pos = pos

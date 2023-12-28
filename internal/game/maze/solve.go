@@ -1,22 +1,22 @@
 package maze
 
 import (
-	"github.com/avbar/maze/internal/common"
+	"github.com/avbar/maze/internal/game/coord"
 )
 
-func (m *Maze) Solve(start, finish common.Pos) common.Path {
+func (m *Maze) Solve(start, finish coord.Pos) coord.Path {
 	steps := m.makeWave(start, finish)
 	return m.makePath(steps, start)
 }
 
-func (m *Maze) makeWave(start, finish common.Pos) [][]int {
+func (m *Maze) makeWave(start, finish coord.Pos) [][]int {
 	steps := make([][]int, m.rows)
 	for i := 0; i < m.rows; i++ {
 		steps[i] = make([]int, m.cols)
 	}
 
 	steps[finish.Row][finish.Col] = 1
-	cells := []common.Pos{finish}
+	cells := []coord.Pos{finish}
 
 	for len(cells) > 0 {
 		c, r := cells[0].Col, cells[0].Row
@@ -27,7 +27,7 @@ func (m *Maze) makeWave(start, finish common.Pos) [][]int {
 			if r == start.Row && c-1 == start.Col {
 				break
 			}
-			cells = append(cells, common.Pos{Col: c - 1, Row: r})
+			cells = append(cells, coord.Pos{Col: c - 1, Row: r})
 		}
 
 		if c < m.cols-1 && steps[r][c+1] == 0 && !m.vWalls[r][c] {
@@ -35,7 +35,7 @@ func (m *Maze) makeWave(start, finish common.Pos) [][]int {
 			if r == start.Row && c+1 == start.Col {
 				break
 			}
-			cells = append(cells, common.Pos{Col: c + 1, Row: r})
+			cells = append(cells, coord.Pos{Col: c + 1, Row: r})
 		}
 
 		if r > 0 && steps[r-1][c] == 0 && !m.hWalls[r-1][c] {
@@ -43,7 +43,7 @@ func (m *Maze) makeWave(start, finish common.Pos) [][]int {
 			if r-1 == start.Row && c == start.Col {
 				break
 			}
-			cells = append(cells, common.Pos{Col: c, Row: r - 1})
+			cells = append(cells, coord.Pos{Col: c, Row: r - 1})
 		}
 
 		if r < m.rows-1 && steps[r+1][c] == 0 && !m.hWalls[r][c] {
@@ -51,7 +51,7 @@ func (m *Maze) makeWave(start, finish common.Pos) [][]int {
 			if r+1 == start.Row && c == start.Col {
 				break
 			}
-			cells = append(cells, common.Pos{Col: c, Row: r + 1})
+			cells = append(cells, coord.Pos{Col: c, Row: r + 1})
 		}
 
 		cells = cells[1:]
@@ -60,8 +60,8 @@ func (m *Maze) makeWave(start, finish common.Pos) [][]int {
 	return steps
 }
 
-func (m *Maze) makePath(steps [][]int, start common.Pos) common.Path {
-	var p common.Path
+func (m *Maze) makePath(steps [][]int, start coord.Pos) coord.Path {
+	var p coord.Path
 	c, r := start.Col, start.Row
 
 	for steps[r][c] > 1 {
@@ -74,7 +74,7 @@ func (m *Maze) makePath(steps [][]int, start common.Pos) common.Path {
 		} else if r < m.rows-1 && steps[r+1][c] == steps[r][c]-1 && !m.hWalls[r][c] {
 			r += 1
 		}
-		p = append(p, common.Pos{Col: c, Row: r})
+		p = append(p, coord.Pos{Col: c, Row: r})
 	}
 
 	return p

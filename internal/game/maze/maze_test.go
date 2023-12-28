@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/avbar/maze/internal/common"
-	"github.com/avbar/maze/internal/maze"
+	"github.com/avbar/maze/internal/game/coord"
+	"github.com/avbar/maze/internal/game/maze"
 )
 
 type walls struct {
@@ -94,30 +94,30 @@ func TestSolve(t *testing.T) {
 	type args struct {
 		cols   int
 		rows   int
-		start  common.Pos
-		finish common.Pos
+		start  coord.Pos
+		finish coord.Pos
 	}
 
 	tests := []struct {
 		name string
 		args args
-		want common.Path
+		want coord.Path
 	}{
 		{
 			name: "solve maze 10x10",
 			args: args{
 				cols: 10,
 				rows: 10,
-				start: common.Pos{
+				start: coord.Pos{
 					Col: 9,
 					Row: 0,
 				},
-				finish: common.Pos{
+				finish: coord.Pos{
 					Col: 4,
 					Row: 9,
 				},
 			},
-			want: common.Path{
+			want: coord.Path{
 				{Col: 9, Row: 1}, {Col: 8, Row: 1}, {Col: 7, Row: 1}, {Col: 6, Row: 1},
 				{Col: 5, Row: 1}, {Col: 5, Row: 2}, {Col: 6, Row: 2}, {Col: 6, Row: 3},
 				{Col: 6, Row: 4}, {Col: 6, Row: 5}, {Col: 6, Row: 6}, {Col: 6, Row: 7},

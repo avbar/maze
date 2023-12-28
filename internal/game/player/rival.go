@@ -1,11 +1,11 @@
-package game
+package player
 
 import (
 	"github.com/avbar/maze/internal/assets"
-	"github.com/avbar/maze/internal/common"
+	"github.com/avbar/maze/internal/game/coord"
 )
 
-func NewRival(pos common.Pos, width, height float64) *Player {
+func NewRival(pos coord.Pos, width, height float64) *Player {
 	rival := NewPlayer(pos, width, height)
 	rival.direction = directionLeft
 	rival.sprite = assets.RivalSprite

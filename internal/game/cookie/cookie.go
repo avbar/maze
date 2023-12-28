@@ -1,25 +1,25 @@
-package game
+package cookie
 
 import (
 	"github.com/avbar/maze/internal/assets"
-	"github.com/avbar/maze/internal/common"
+	"github.com/avbar/maze/internal/game/coord"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Cookie struct {
 	// Maze position
-	pos common.Pos
+	pos coord.Pos
 
 	// Data for drawing
 	width     float64
 	height    float64
-	screenPos common.Vector
+	screenPos coord.Vector
 	sprite    *ebiten.Image
 }
 
-func NewCookie(pos common.Pos, width, height float64) *Cookie {
-	screenPos := common.Vector{
+func NewCookie(pos coord.Pos, width, height float64) *Cookie {
+	screenPos := coord.Vector{
 		X: float64(pos.Col) * width,
 		Y: float64(pos.Row) * height,
 	}
@@ -33,7 +33,7 @@ func NewCookie(pos common.Pos, width, height float64) *Cookie {
 	}
 }
 
-func (c *Cookie) Pos() common.Pos {
+func (c *Cookie) Pos() coord.Pos {
 	return c.pos
 }
 

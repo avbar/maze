@@ -1,4 +1,4 @@
-package common
+package coord
 
 type Pos struct {
 	Col int

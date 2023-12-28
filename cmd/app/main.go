@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/avbar/maze/internal/common"
 	"github.com/avbar/maze/internal/gameengine"
+	"github.com/avbar/maze/internal/settings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -14,7 +14,7 @@ const (
 	ScreenHeight = 600
 )
 
-var Settings = common.Settings{
+var Settings = settings.Settings{
 	Cols:  10,
 	Rows:  10,
 	Speed: 6,

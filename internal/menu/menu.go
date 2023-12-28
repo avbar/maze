@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/avbar/maze/internal/common"
+	"github.com/avbar/maze/internal/settings"
 
 	"github.com/ebitenui/ebitenui"
 	"github.com/ebitenui/ebitenui/widget"
@@ -16,14 +16,14 @@ const (
 )
 
 type Menu struct {
-	settings     common.Settings
-	prevSettings common.Settings
+	settings     settings.Settings
+	prevSettings settings.Settings
 	ui           *ebitenui.UI
 	sliderValues map[string]*int
 	close        func()
 }
 
-func NewMenu(settings common.Settings, close func()) *Menu {
+func NewMenu(settings settings.Settings, close func()) *Menu {
 	c := widget.NewContainer(
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
 			StretchHorizontal: true,
@@ -60,7 +60,7 @@ func NewMenu(settings common.Settings, close func()) *Menu {
 	return m
 }
 
-func (m *Menu) Settings() common.Settings {
+func (m *Menu) Settings() settings.Settings {
 	return m.settings
 }
 

@@ -1,9 +1,9 @@
 package gameengine
 
 import (
-	"github.com/avbar/maze/internal/common"
 	"github.com/avbar/maze/internal/game"
 	"github.com/avbar/maze/internal/menu"
+	"github.com/avbar/maze/internal/settings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -16,13 +16,13 @@ type Scene interface {
 type GameEngine struct {
 	screenWidth  int
 	screenHeight int
-	settings     common.Settings
+	settings     settings.Settings
 	game         *game.Game
 	menu         *menu.Menu
 	scene        Scene
 }
 
-func NewGameEngine(screenWidth, screenHeight int, settings common.Settings) *GameEngine {
+func NewGameEngine(screenWidth, screenHeight int, settings settings.Settings) *GameEngine {
 	g := &GameEngine{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
