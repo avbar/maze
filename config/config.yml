@@ -1,0 +1,6 @@
+screen_width: 800
+screen_height: 600
+settings:
+  cols: 10
+  rows: 10
+  speed: 6
