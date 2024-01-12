@@ -1,8 +1,6 @@
 package config
 
 import (
-	"os"
-
 	"github.com/avbar/maze/internal/settings"
 
 	"gopkg.in/yaml.v3"
@@ -15,7 +13,7 @@ type Config struct {
 }
 
 func MustLoad() *Config {
-	rawYAML, err := os.ReadFile("config/config.yml")
+	rawYAML, err := readFile()
 	if err != nil {
 		panic("cannot read config file: " + err.Error())
 	}
